@@ -1,13 +1,11 @@
 "use strict";
 
+// Рандомайзер и счётчики
 function getRandomInt() {
   return Math.floor(Math.random() * 20 + 1);
 }
-getRandomInt();
 
-// Рандомайзер и счётчики
 let randomNumber = getRandomInt();
-console.log(randomNumber);
 let scoreCounter = 20;
 let highScoreCounter = 0;
 
@@ -25,24 +23,30 @@ const highScore = document.querySelector(".highscore");
 function checkNumber() {
   if (!inputNumber.value) {
     message.textContent = "Вы не ввели число";
-  } else if (inputNumber.value == randomNumber) {
+  } else if (Number(inputNumber.value) === randomNumber) {
     handleScoreFunction();
     win();
-  } else if (inputNumber.value < randomNumber) {
-    handleScoreFunction();
+  } else if (Number(inputNumber.value) < randomNumber) {
     message.textContent = `${inputNumber.value}? Маловато...`;
-    inputNumber.value = "";
-  } else if (inputNumber.value > randomNumber) {
     handleScoreFunction();
+  } else if (Number(inputNumber.value) > randomNumber) {
     message.textContent = `${inputNumber.value}? Слишком много!`;
-    inputNumber.value = "";
+    handleScoreFunction();
   }
 }
+
+buttonCheck.addEventListener("click", checkNumber);
+inputNumber.addEventListener("keydown", function (event) {
+  if (event.key === "Enter") {
+    buttonCheck.click();
+  }
+});
 
 // Функция счетчика очков
 function handleScoreFunction() {
   scoreCounter--;
   score.textContent = scoreCounter;
+  inputNumber.value = "";
 }
 
 // Функция, срабатывающая при угадывании
@@ -51,20 +55,16 @@ function win() {
   theNumber.textContent = randomNumber;
   background.style.background = "#60b347";
   buttonCheck.removeEventListener("click", checkNumber);
+  buttonCheck.setAttribute("disabled", "");
   if (scoreCounter > highScoreCounter) {
     highScoreCounter = scoreCounter;
     highScore.textContent = highScoreCounter;
   }
 }
 
-// Слушатели по клику
-buttonCheck.addEventListener("click", checkNumber);
-buttonAgain.addEventListener("click", restart);
-
 //Функция перезагрузки
 function restart() {
   randomNumber = getRandomInt();
-  console.log(randomNumber);
   scoreCounter = 20;
   score.textContent = 20;
   theNumber.textContent = "?";
@@ -77,4 +77,7 @@ function restart() {
     rgba(56, 59, 60, 1) 100%
   )`;
   buttonCheck.addEventListener("click", checkNumber);
+  buttonCheck.removeAttribute("disabled");
 }
+
+buttonAgain.addEventListener("click", restart);

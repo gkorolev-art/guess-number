@@ -114,6 +114,11 @@ h1 {
   background-color: #ccc;
 }
 
+.btn:disabled {
+  background-color: #555;
+  cursor: auto;
+}
+
 .message {
   margin-bottom: 1rem;
   height: 3rem;
