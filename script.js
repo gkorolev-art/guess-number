@@ -2,10 +2,10 @@
 
 // Рандомайзер и счётчики
 function getRandomInt() {
-  return Math.floor(Math.random() * 20 + 1);
+  return Math.trunc(Math.random() * 20) + 1;
 }
 
-let randomNumber = getRandomInt();
+let secretNumber = getRandomInt();
 let scoreCounter = 20;
 let highScoreCounter = 0;
 
@@ -15,44 +15,36 @@ const theNumber = document.querySelector(".number");
 const inputNumber = document.querySelector(".guess");
 const buttonCheck = document.querySelector(".check");
 const buttonAgain = document.querySelector(".again");
-const message = document.querySelector(".message");
 const score = document.querySelector(".score");
 const highScore = document.querySelector(".highscore");
+const displayMessage = function (message) {
+  document.querySelector(".message").textContent = message;
+};
 
 // Функция проверки введённого числа
 function checkNumber() {
+  handleScoreFunction();
   if (!inputNumber.value) {
-    message.textContent = "Вы не ввели число";
-  } else if (Number(inputNumber.value) === randomNumber) {
-    handleScoreFunction();
+    displayMessage("Вы не ввели число");
+  } else if (Number(inputNumber.value) === secretNumber) {
     win();
-  } else if (Number(inputNumber.value) < randomNumber) {
-    message.textContent = `${inputNumber.value}? Маловато...`;
-    handleScoreFunction();
-  } else if (Number(inputNumber.value) > randomNumber) {
-    message.textContent = `${inputNumber.value}? Слишком много!`;
-    handleScoreFunction();
+  } else if (Number(inputNumber.value) !== secretNumber) {
+    if (scoreCounter > 0) {
+      Number(inputNumber.value) > secretNumber
+        ? displayMessage(`${inputNumber.value}? Слишком много!`)
+        : displayMessage(`${inputNumber.value}? Маловато...`);
+    } else {
+      displayMessage("Вы проиграли");
+      background.style.background = "#CD5C5C";
+    }
   }
-}
-
-buttonCheck.addEventListener("click", checkNumber);
-inputNumber.addEventListener("keydown", function (event) {
-  if (event.key === "Enter") {
-    buttonCheck.click();
-  }
-});
-
-// Функция счетчика очков
-function handleScoreFunction() {
-  scoreCounter--;
-  score.textContent = scoreCounter;
   inputNumber.value = "";
 }
 
 // Функция, срабатывающая при угадывании
 function win() {
-  message.textContent = "Вы угадали!";
-  theNumber.textContent = randomNumber;
+  displayMessage("Вы угадали!");
+  theNumber.textContent = secretNumber;
   background.style.background = "#60b347";
   buttonCheck.removeEventListener("click", checkNumber);
   buttonCheck.setAttribute("disabled", "");
@@ -62,14 +54,27 @@ function win() {
   }
 }
 
+// Функция счетчика очков
+function handleScoreFunction() {
+  scoreCounter--;
+  score.textContent = scoreCounter;
+}
+
+//Слушатель клика на кнопку проверки + клик по нажатию клавиши Enter
+buttonCheck.addEventListener("click", checkNumber);
+inputNumber.addEventListener("keydown", function (event) {
+  if (event.key === "Enter") {
+    buttonCheck.click();
+  }
+});
+
 //Функция перезагрузки
 function restart() {
-  randomNumber = getRandomInt();
+  secretNumber = getRandomInt();
   scoreCounter = 20;
-  score.textContent = 20;
+  score.textContent = scoreCounter;
   theNumber.textContent = "?";
-  message.textContent = "Начните угадывать";
-  highScore.textContent = highScoreCounter;
+  displayMessage("Начните угадывать");
   inputNumber.value = "";
   background.style.background = `radial-gradient(
     circle,
